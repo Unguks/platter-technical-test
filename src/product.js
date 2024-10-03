@@ -7,7 +7,13 @@ const app = express();
 app.use(bodyParser.json());
 
 const { Client } = require('pg');
-const db = new Client({ database: 'product' });
+const db = new Client({
+  user: process.env.POSTGRES_USER,
+  host: process.env.POSTGRES_HOST,
+  database: process.env.POSTGRES_DB_PRODUCT,
+  password: process.env.POSTGRES_PASSWORD,
+  port: process.env.POSTGRES_PORT,
+});
 db.connect();
 
 app.post('/product/check-out', async (req, res) => {
