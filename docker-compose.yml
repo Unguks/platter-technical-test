@@ -1,0 +1,77 @@
+version: '3'
+services:
+  product:
+    build:
+      context: .
+      dockerfile: Dockerfile.product
+    ports:
+      - "9301:9301"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB_PRODUCT=${POSTGRES_DB_PRODUCT}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+
+  payment:
+    build:
+      context: .
+      dockerfile: Dockerfile.payment
+    ports:
+      - "9302:9302"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB_PAYMENT=${POSTGRES_DB_PAYMENT}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+
+  users:
+    build:
+      context: .
+      dockerfile: Dockerfile.users
+    ports:
+      - "9303:9303"
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+
+  notification:
+    build:
+      context: .
+      dockerfile: Dockerfile.notification
+    ports:
+      - "9304:9304"
+    depends_on:
+      - rabbitmq
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"  
+      - "15672:15672"  
+
+volumes:
+  pgdata:
